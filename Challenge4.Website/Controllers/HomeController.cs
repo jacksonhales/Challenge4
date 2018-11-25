@@ -8,6 +8,7 @@ namespace Challenge4.Website.Controllers
 {
     public class HomeController : Controller
     {
+        [RequireHttps]
         public ActionResult Index()
         {
             return View();

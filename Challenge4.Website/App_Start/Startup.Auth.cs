@@ -58,11 +58,11 @@ namespace Challenge4.Website
             //   appId: "",
             //   appSecret: "");
 
-            //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
-            //{
-            //    ClientId = "",
-            //    ClientSecret = ""
-            //});
+            app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
+            {
+                ClientId = "67203917765-nq5dvlmbmvnom2n5i7qd21vc4rs73lim.apps.googleusercontent.com",
+                ClientSecret = "qulupMRjPc4RWyyyRygL3sW6"
+            });
         }
     }
 }
