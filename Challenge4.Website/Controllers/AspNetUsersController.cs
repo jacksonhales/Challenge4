@@ -12,15 +12,17 @@ using Microsoft.AspNet.Identity;
 
 namespace Challenge4.Website.Controllers
 {
-    public class GamesController : Controller
+    public class AspNetUsersController : Controller
     {
         private Entities db = new Entities();
 
-        // GET: Games
+        // GET: AspNetUsers
         public async Task<ActionResult> Index()
         {
-            GamesViewModel viewModel = new GamesViewModel();
+
+            AspNetUserViewModel viewModel = new AspNetUserViewModel();
             AspNetUser currentUser;
+            List<AspNetUser> users = db.AspNetUsers.ToList();
 
             string userId = User.Identity.GetUserId();
             if (userId != null)
@@ -33,126 +35,122 @@ namespace Challenge4.Website.Controllers
                 currentUser.EmailConfirmed = false;
             }
 
-            viewModel.Games = await db.Games.Where(g => g.Date > DateTime.Today).ToListAsync();
+            viewModel.Games = await db.Games.ToListAsync();
             viewModel.AspNetUser = currentUser;
+            viewModel.AspNetUsers = users;
 
             return View(viewModel);
         }
 
-        public async Task<ActionResult> PastGames()
+        public async Task<ActionResult> Approve(AspNetUser pAspNetUser)
         {
-            GamesViewModel viewModel = new GamesViewModel();
-            AspNetUser currentUser;
+            AspNetUser userToUpdate = db.AspNetUsers.Single(a => a.Id == pAspNetUser.Id);
 
-            string userId = User.Identity.GetUserId();
-            if (userId != null)
+            if (pAspNetUser.UserRole == 1 || pAspNetUser.UserRole == 2)
             {
-                currentUser = db.AspNetUsers.SingleOrDefault(m => m.Id == userId);
+                userToUpdate.EmailConfirmed = true;
             }
             else
             {
-                currentUser = new AspNetUser();
-                currentUser.EmailConfirmed = false;
+                userToUpdate.EmailConfirmed = true;
+                userToUpdate.UserRole = 2;
             }
-
-            viewModel.Games = await db.Games.Where(g => g.Date < DateTime.Today).ToListAsync();
-            viewModel.AspNetUser = currentUser;
-
-            return View(viewModel);
+            
+            await db.SaveChangesAsync();
+            return RedirectToAction("Index");
         }
 
-        // GET: Games/Details/5
-        public async Task<ActionResult> Details(int? id)
+        // GET: AspNetUsers/Details/5
+        public async Task<ActionResult> Details(string id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Game game = await db.Games.FindAsync(id);
-            if (game == null)
+            AspNetUser aspNetUser = await db.AspNetUsers.FindAsync(id);
+            if (aspNetUser == null)
             {
                 return HttpNotFound();
             }
-            return View(game);
+            return View(aspNetUser);
         }
 
-        // GET: Games/Create
-        [Authorize]
+        // GET: AspNetUsers/Create
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: Games/Create
+        // POST: AspNetUsers/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,Time,Date,Venue,CourtFee,WhoPaid")] Game game)
+        public async Task<ActionResult> Create([Bind(Include = "Id,Email,EmailConfirmed,PasswordHash,SecurityStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEndDateUtc,LockoutEnabled,AccessFailedCount,UserName")] AspNetUser aspNetUser)
         {
             if (ModelState.IsValid)
             {
-                db.Games.Add(game);
+                db.AspNetUsers.Add(aspNetUser);
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
 
-            return View(game);
+            return View(aspNetUser);
         }
 
-        // GET: Games/Edit/5
-        public async Task<ActionResult> Edit(int? id)
+        // GET: AspNetUsers/Edit/5
+        public async Task<ActionResult> Edit(string id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Game game = await db.Games.FindAsync(id);
-            if (game == null)
+            AspNetUser aspNetUser = await db.AspNetUsers.FindAsync(id);
+            if (aspNetUser == null)
             {
                 return HttpNotFound();
             }
-            return View(game);
+            return View(aspNetUser);
         }
 
-        // POST: Games/Edit/5
+        // POST: AspNetUsers/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,Time,Date,Venue,CourtFee,WhoPaid")] Game game)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,Email,EmailConfirmed,PasswordHash,SecurityStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEndDateUtc,LockoutEnabled,AccessFailedCount,UserName")] AspNetUser aspNetUser)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(game).State = EntityState.Modified;
+                db.Entry(aspNetUser).State = EntityState.Modified;
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            return View(game);
+            return View(aspNetUser);
         }
 
-        // GET: Games/Delete/5
-        public async Task<ActionResult> Delete(int? id)
+        // GET: AspNetUsers/Delete/5
+        public async Task<ActionResult> Delete(string id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Game game = await db.Games.FindAsync(id);
-            if (game == null)
+            AspNetUser aspNetUser = await db.AspNetUsers.FindAsync(id);
+            if (aspNetUser == null)
             {
                 return HttpNotFound();
             }
-            return View(game);
+            return View(aspNetUser);
         }
 
-        // POST: Games/Delete/5
+        // POST: AspNetUsers/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeleteConfirmed(int id)
+        public async Task<ActionResult> DeleteConfirmed(string id)
         {
-            Game game = await db.Games.FindAsync(id);
-            db.Games.Remove(game);
+            AspNetUser aspNetUser = await db.AspNetUsers.FindAsync(id);
+            db.AspNetUsers.Remove(aspNetUser);
             await db.SaveChangesAsync();
             return RedirectToAction("Index");
         }

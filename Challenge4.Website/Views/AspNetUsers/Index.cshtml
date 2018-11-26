@@ -1,0 +1,68 @@
+﻿@using Challenge4.Website.Models
+@model AspNetUserViewModel
+
+@{
+    ViewBag.Title = "Team Members";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Team Members</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.AspNetUser.Email)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.AspNetUser.EmailConfirmed)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.AspNetUser.UserRole)
+        </th>
+        <th>Total Spend</th>
+        <th></th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model.AspNetUsers)
+{
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Email)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.EmailConfirmed)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UserRole)
+        </td>
+        <td>
+            @{decimal? totalSpend = 0;}
+            @foreach (Game g in Model.Games)
+            {
+                if (g.WhoPaid == item.Email)
+                {
+                    totalSpend += g.CourtFee;
+                }
+            }
+            @totalSpend
+        </td>
+        <td>
+            @if (item.EmailConfirmed == true)
+            {
+            }
+            else
+            {
+                <input type="button" class="btn btn-primary" value="Approve" onclick="location.href='@Url.Action("Approve", "AspNetUsers", item)'" />
+            }
+
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
+            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
+        </td>
+    </tr>
+}
+
+</table>

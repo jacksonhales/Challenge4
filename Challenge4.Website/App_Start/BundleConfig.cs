@@ -25,6 +25,12 @@ namespace Challenge4.Website
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));
+
+            bundles.Add(new ScriptBundle("~/bundles/jqueryui")
+                .Include("~/Scripts/jquery-ui-{version}.js"));
+
+            bundles.Add(new StyleBundle("~/Content/jqueryui")
+               .Include("~/Content/themes/base/all.css"));
         }
     }
 }
